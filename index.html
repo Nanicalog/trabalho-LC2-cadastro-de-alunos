@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Cadastro de Alunos — Notas e Médias</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="index.js"></script>
 </head>
 
 <body>
@@ -61,8 +60,141 @@
             <small>Feito com HTML, CSS e JavaScript — tema Azul & Branco</small>
         </div>
     </main>
+    <script>
+        const alunos = [];
 
-    <script src="app.js"></script>
+        // Função para atualizar a tabela de alunos
+        function atualizarTabela() {
+            const tbody = document.querySelector('#tabelaAlunos tbody');
+            tbody.innerHTML = "";
+
+            if (alunos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum aluno cadastrado ainda.</td></tr>';
+                return;
+            }
+
+            alunos.forEach((aluno, index) => {
+                const linha = document.createElement("tr");
+
+                linha.innerHTML = `
+      <td>${aluno.nome}</td>
+      <td>${isNaN(aluno.notas[0]) ? '-' : aluno.notas[0]}</td>
+      <td>${isNaN(aluno.notas[1]) ? '-' : aluno.notas[1]}</td>
+      <td>${isNaN(aluno.notas[2]) ? '-' : aluno.notas[2]}</td>
+      <td>${aluno.media || '-'}</td>
+    `;
+
+                tbody.appendChild(linha);
+            });
+        }
+
+        // Função para formatar nomes
+        function formatarNome(nome) {
+            return nome
+                .trim()
+                .toLowerCase()
+                .split(' ')
+                .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+                .join(' ');
+        }
+
+        // Adicionar aluno
+        document.getElementById("btnAdicionar").addEventListener("click", () => {
+            const nome = formatarNome(document.getElementById("nome").value);
+            const nota1 = parseFloat(document.getElementById("nota1").value);
+            const nota2 = parseFloat(document.getElementById("nota2").value);
+            const nota3 = parseFloat(document.getElementById("nota3").value);
+
+            if (!nome) {
+                alert("Digite o nome do aluno!");
+                return;
+            }
+
+            // Verifica se o aluno já existe
+            const alunoExistente = alunos.find(a => a.nome === nome);
+            if (alunoExistente) {
+                alunoExistente.notas = [nota1, nota2, nota3];
+                alunoExistente.media = null; // Reseta a média
+            } else {
+                alunos.push({
+                    nome,
+                    notas: [nota1, nota2, nota3],
+                    media: null
+                });
+            }
+
+            // Limpa os campos
+            document.getElementById("nome").value = "";
+            document.getElementById("nota1").value = "";
+            document.getElementById("nota2").value = "";
+            document.getElementById("nota3").value = "";
+
+            atualizarTabela();
+            alert('Aluno "' + nome + '" ' + (alunoExistente ? 'atualizado' : 'cadastrado') + ' com sucesso!');
+        });
+
+        // Calcular médias
+        document.getElementById("btnCalcularTodas").addEventListener("click", () => {
+            if (alunos.length === 0) {
+                alert("Nenhum aluno cadastrado para calcular médias!");
+                return;
+            }
+
+            alunos.forEach(aluno => {
+                let soma = 0;
+                let notasValidas = 0;
+
+                aluno.notas.forEach(nota => {
+                    if (!isNaN(nota)) {
+                        soma += nota;
+                        notasValidas++;
+                    }
+                });
+
+                aluno.media = notasValidas > 0 ? (soma / notasValidas).toFixed(2) : '-';
+            });
+
+            atualizarTabela();
+            alert("Médias calculadas para todos os alunos!");
+        });
+
+        // Buscar aluno
+        document.getElementById("btnBuscar").addEventListener("click", () => {
+            const nomeBusca = formatarNome(document.getElementById("busca").value);
+
+            if (!nomeBusca) {
+                alert("Digite um nome para buscar!");
+                return;
+            }
+
+            const alunoEncontrado = alunos.find(a => a.nome === nomeBusca);
+
+            if (alunoEncontrado) {
+                alert('Aluno encontrado!\nNome: ' + alunoEncontrado.nome + '\nNotas: ' + alunoEncontrado.notas.map(n => isNaN(n) ? '-' : n).join(', ') + '\nMédia: ' + (alunoEncontrado.media || 'Não calculada'));
+            } else {
+                alert("Aluno não encontrado!");
+            }
+        });
+
+        // Limpar lista
+        document.getElementById("btnLimpar").addEventListener("click", () => {
+            if (alunos.length === 0) {
+                alert("A lista já está vazia!");
+                return;
+            }
+
+            if (confirm("Tem certeza que deseja limpar toda a lista de alunos?")) {
+                alunos.length = 0;
+                atualizarTabela();
+                alert("Lista de alunos limpa com sucesso!");
+            }
+        });
+
+        // Inicializa a tabela
+        atualizarTabela();
+    </script>
+
+    <script src="script.js"></script>
 </body>
 
 </html>

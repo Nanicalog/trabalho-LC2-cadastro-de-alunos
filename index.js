@@ -1,92 +1,104 @@
-const students = [];
+// Vetor para armazenar os alunos
+const alunos = [];
 
-// Normalizar nomes
-function normalizeName(raw) {
-  if (!raw) return '';
-  let s = raw.trim().replace(/\s+/g, ' ').toLowerCase();
-  return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-}
-
-// Converter string de notas em números
-function parseGrades(raw) {
-  if (!raw) return [];
-  return raw.split(',').map(x => x.trim().replace(',', '.')).map(Number).filter(n => !isNaN(n));
+// Função para formatar nomes (ex: "maria silva" -> "Maria Silva")
+function formatarNome(nome) {
+    return nome
+        .toLowerCase()
+        .split(' ')
+        .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+        .join(' ');
 }
 
 // Adicionar aluno
-function addStudent(nameRaw, gradesRaw) {
-  const name = normalizeName(nameRaw);
-  const grades = parseGrades(gradesRaw);
-  if (!name) { showMessage('Nome inválido.'); return; }
-  students.push({ name, grades, average: null });
-  renderTable();
-  showMessage(`Aluno "${name}" adicionado.`);
+function adicionarAluno() {
+    const nome = formatarNome(document.getElementById('nome').value);
+    const nota1 = parseFloat(document.getElementById('nota1').value);
+    const nota2 = parseFloat(document.getElementById('nota2').value);
+    const nota3 = parseFloat(document.getElementById('nota3').value);
+
+    if (!nome) {
+        alert('Digite o nome do aluno!');
+        return;
+    }
+
+    alunos.push({
+        nome: nome,
+        notas: [nota1, nota2, nota3],
+        media: null
+    });
+
+    mostrarAlunos();
+    alert('Aluno adicionado!');
 }
 
-// Calcular médias (loop)
-function calculateAverages() {
-  for (let i = 0; i < students.length; i++) {
-    const s = students[i];
-    if (s.grades.length === 0) { s.average = null; continue; }
-    let soma = 0;
-    for (let j = 0; j < s.grades.length; j++) { soma += s.grades[j]; }
-    s.average = +(soma / s.grades.length).toFixed(2);
-  }
-  renderTable();
-  showMessage('Médias calculadas.');
+// Calcular médias
+function calcularMedias() {
+    for (let aluno of alunos) {
+        let soma = 0;
+        let contador = 0;
+
+        for (let nota of aluno.notas) {
+            if (!isNaN(nota)) {
+                soma += nota;
+                contador++;
+            }
+        }
+
+        aluno.media = contador > 0 ? (soma / contador).toFixed(2) : '-';
+    }
+
+    mostrarAlunos();
+    alert('Médias calculadas!');
 }
 
-// Busca sequencial
-function sequentialSearch(nameRaw) {
-  const name = normalizeName(nameRaw);
-  for (let i = 0; i < students.length; i++) {
-    if (students[i].name === name) return i;
-  }
-  return -1;
-}
+// Buscar aluno
+function buscarAluno() {
+    const nomeBusca = formatarNome(document.getElementById('busca').value);
+    let encontrado = false;
 
-// Renderizar tabela
-function renderTable() {
-  const tbody = document.querySelector('#tabela tbody');
-  tbody.innerHTML = '';
-  students.forEach((s) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${s.name}</td>
-      <td>${s.grades.join(', ') || '-'}</td>
-      <td class="${s.average >= 7 ? 'avg-high' : ''}">${s.average ?? '-'}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+    for (let aluno of alunos) {
+        if (aluno.nome === nomeBusca) {
+            alert(`Encontrado: ${aluno.nome}`);
+            encontrado = true;
+            break;
+        }
+    }
 
-// Mensagens
-function showMessage(msg) {
-  document.getElementById('mensagens').textContent = msg;
+    if (!encontrado) {
+        alert('Aluno não encontrado!');
+    }
 }
 
 // Limpar lista
-function clearAll() {
-  students.length = 0;
-  renderTable();
-  showMessage('Lista de alunos limpa.');
+function limparLista() {
+    alunos.length = 0;
+    mostrarAlunos();
+    alert('Lista limpa!');
 }
 
-// Eventos
-window.onload = () => {
-  document.getElementById('btnAdd').onclick = () => {
-    addStudent(nome.value, notas.value);
-    nome.value = ''; notas.value = '';
-  };
-  document.getElementById('btnCalc').onclick = () => calculateAverages();
-  document.getElementById('btnSearch').onclick = () => {
-    const idx = sequentialSearch(search.value);
-    if (idx === -1) { showMessage('Aluno não encontrado.'); return; }
-    const linhas = document.querySelectorAll('#tabela tbody tr');
-    linhas.forEach(tr => tr.classList.remove('highlight'));
-    linhas[idx].classList.add('highlight');
-    linhas[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    showMessage(`Aluno encontrado: ${students[idx].name}`);
-  };
-  document.getElementById('btnClear').onclick = () => clearAll();
-};
+// Mostrar alunos na tabela
+function mostrarAlunos() {
+    const tabela = document.querySelector('#tabelaAlunos tbody');
+    tabela.innerHTML = '';
+
+    for (let aluno of alunos) {
+        const linha = document.createElement('tr');
+
+        linha.innerHTML = `
+      <td>${aluno.nome}</td>
+      <td>${isNaN(aluno.notas[0]) ? '-' : aluno.notas[0]}</td>
+      <td>${isNaN(aluno.notas[1]) ? '-' : aluno.notas[1]}</td>
+      <td>${isNaN(aluno.notas[2]) ? '-' : aluno.notas[2]}</td>
+      <td>${aluno.media || '-'}</td>
+    `;
+
+        tabela.appendChild(linha);
+    }
+}
+
+// Adicionar eventos aos botões
+document.getElementById('btnAdicionar').onclick = adicionarAluno;
+document.getElementById('btnCalcularTodas').onclick = calcularMedias;
+document.getElementById('btnBuscar').onclick = buscarAluno;
+document.getElementById('btnLimpar').onclick = limparLista;

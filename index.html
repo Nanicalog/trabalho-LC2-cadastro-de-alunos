@@ -2,66 +2,67 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Alunos — Azul & Branco</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cadastro de Alunos — Notas e Médias</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="index.js"></script>
 </head>
 
 <body>
-  <header class="header">
-    <h1>Cadastro de Alunos</h1>
-    <p class="subtitle">
-      Armazena nomes, notas e médias — normaliza nomes, calcula médias e busca sequencial.
-    </p>
-  </header>
+    <header>
+        <h1>Cadastro de Alunos</h1>
+        <div class="subtitle">Armazenar nomes, notas e médias — busca sequencial e normalização de nomes</div>
+    </header>
 
-  <main class="container">
-    <section class="card">
-      <form id="formAluno" onsubmit="return false;">
-        <div class="form-row">
-          <div class="field">
+    <main>
+        <div class="card">
             <label for="nome">Nome do aluno</label>
-            <input id="nome" type="text" placeholder="Ex: jOãO da silva" />
-          </div>
-          <div class="field">
-            <label for="notas">Notas (separadas por vírgula)</label>
-            <input id="notas" type="text" placeholder="Ex: 7.5, 8, 9.25" />
-          </div>
-          <div class="actions">
-            <button id="btnAdd" class="btn">Adicionar aluno</button>
-            <button id="btnCalc" class="btn btn-outline">Calcular médias</button>
-          </div>
+            <input id="nome" placeholder="Ex.: maria silva" />
+
+            <label for="nota1">Nota 1</label>
+            <input id="nota1" type="number" step="0.01" min="0" max="10" placeholder="0 - 10" />
+
+            <label for="nota2">Nota 2</label>
+            <input id="nota2" type="number" step="0.01" min="0" max="10" placeholder="0 - 10" />
+
+            <label for="nota3">Nota 3</label>
+            <input id="nota3" type="number" step="0.01" min="0" max="10" placeholder="0 - 10" />
+
+            <div style="margin-top:10px;">
+                <button id="btnAdicionar">Adicionar / Atualizar aluno</button>
+                <button id="btnCalcularTodas">Calcular médias (todas)</button>
+                <button id="btnLimpar">Limpar lista</button>
+            </div>
         </div>
-      </form>
 
-      <div class="controls">
-        <input id="search" type="search" placeholder="Buscar por nome (sequencial)" />
-        <button id="btnSearch" class="btn btn-search">Buscar</button>
-        <button id="btnClear" class="btn btn-clear">Limpar lista</button>
-      </div>
+        <div class="card" style="margin-top:15px;">
+            <label for="busca">Buscar aluno por nome</label>
+            <input id="busca" placeholder="Digite o nome para buscar (ex.: Maria Silva)" />
+            <button id="btnBuscar">Buscar</button>
 
-      <table id="tabela" class="table">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Notas</th>
-            <th>Média</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+            <table class="table" id="tabelaAlunos">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Nota 1</th>
+                        <th>Nota 2</th>
+                        <th>Nota 3</th>
+                        <th>Média</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linhas geradas por JavaScript -->
+                </tbody>
+            </table>
+        </div>
 
-      <div id="mensagens" class="mensagens"></div>
-    </section>
-  </main>
+        <div class="footer">
+            <small>Feito com HTML, CSS e JavaScript — tema Azul & Branco</small>
+        </div>
+    </main>
 
-  <footer class="footer">
-    Feito para demonstrar vetores, manipulação de strings, loops e busca sequencial — tema azul e branco.
-  </footer>
-
-  <!-- JavaScript principal -->
-  <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>
